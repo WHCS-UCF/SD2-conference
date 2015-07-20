@@ -194,6 +194,7 @@ pdfauthor={Grant Hernandez},
 % BEGIN DOCUMENT
 %=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%=%
 \begin{document}
+\pagenumbering{gobble}
 
 % We want this depth for our TOC
 \setcounter{secnumdepth}{3}
@@ -210,10 +211,11 @@ pdfauthor={Grant Hernandez},
 \vspace{0.5cm}
 
 \large Dept. of Electrical Engineering and Computer Science, University of Central Florida, Orlando, Florida, 32816-2450  
+\vspace{0.5cm}
 \end{center}
 
 \begin{abstract}
-\lipsum[1]
+The presence of wireless technologies and proliferation of mobile controlled devices have inspired a push toward consumer based home automation systems. Wireless Home Control System is a home automation framework designed to compete with popular solutions in the domain. The system features peripheral control modules capable of interacting with lights, outlets, doors, and sensors. All control modules communicate with a central hub that is paired with a mobile device to provide total control to the user. We describe the hardware and software necessary to conceive this system.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -255,23 +257,8 @@ home. Efficient forms of rectification and power provision will need to be
 researched for WHCS to be self{}-sufficient. Important research and critical
 design decisions will go into the development of the printed circuit boards
 that will provide the foundation for all the hardware of WHCS.
+\ucfgfx[width=\linewidth]{fig:whcs-overview}{a21expected2pages-img001.png}{WHCS System Overview}
 
-Wireless Home Control System is a solution targeting the masses and designed by
-few. Naturally such a system will suffer from the constraints imposed upon the
-creators. Most prominent of all constraints are those stemming from economics.
-The development and production of WHCS will have to conform to the low budget
-available. Design decisions will be made to minimize overall cost of the system
-to satisfy this constraint. WHCS has the potential for mass implementation if
-user reception is positive so the design will adhere to manufacturing
-constraints. The parts used in the system will be chosen so that they are
-widely available. Our boards and parts will be designed so that they are easy
-to replicate and manufacture. With a product such as WHCS health and safety is
-clearly an issue. The system is meant to be installed inside the home where the
-user should feel at ease with the system installed. Thus it is ethical for us to
-put effort into making the system safe to use. Things such as controlling the
-home{}'s high voltage will have to be done in a safe manner. Security is
-another strong constraint attributed to products targeting the home. The system
-will be designed to maximize security for our users.
 
 % Base Station
 \section{Base Station}
@@ -288,7 +275,7 @@ details do not have to be considered. This abstraction will be excellent in
 keeping the system clean from one-off cases and allow for a Domain Specific API
 to be formed.
 
-\subsubsection{Software Flow}
+\subsection{Software Flow}
 The main software flow for the base station is the most complicated in WHCS. It
 has to manage three separate devices simulatenously and be able to service each
 one in a timely manner. The LCD, NRF radio, and Bluetooth module are all being
@@ -385,7 +372,7 @@ All of the above tasks will be executing in the same way as single core CPU
 would: in pseudo-parallel. The faster the whole system runs, the better the
 appearance of everything executing at once.
 
-\subsubsection{Control Module Abstraction}
+\subsection{Control Module Abstraction}
 For WHCS to function smoothly and scale well, a neat and abstracted interface
 must be defined to accept \emph{any} type of control module. New control module
 types should be easily added to the system without affecting older types and
@@ -418,14 +405,14 @@ would control its function in relation to the base station.
 %
 %\end{lstlisting}
 
-\subsubsection{Subsystems}
+\subsection{Subsystems}
 The base station has the hardest job in the entire WHCS architecture. It has to
 juggle a lot of data with limited memory and processing speed. Packets need to be
 processed and queued to keep the pipeline flowing smoothly. The following
 sections will break down the individual subsystems and how they work in concert
 to make the base station a well oiled microcontroller.
 
-\paragraph{NRF24L01+}
+\subsubsection{NRF24L01+}
 The NRF radio will be directly connected to the Atmega32-A microcontroller
 which will control its state. This module will be constantly listening for new
 packets from the control modules and sending responses in turn. Due to this
@@ -473,7 +460,7 @@ net code. The high-level interface that the BS will know about will be
 sufficient and feature rich enough to carry out all of the actions required for
 WHCS to come to fruition.
 
-\paragraph{HC-05}
+\subsubsection{HC-05}
 The HC-05 BlueTooth module is quite simple in its operations. Data is sent over
 a two line serial bus and if there is an active connection to a bluetooth
 enabled device, it will be able to easily receive the data and handle it. In
@@ -486,7 +473,7 @@ changing WHCS' state will need to be derived. This set of functions is
 important for more than just the BlueTooth link - if written correctly, it
 could scale to many different consumers and producers of commands. A simple
 diagram showing a very high level interaction of a BT device with the base
-station is for reference in \autoref{fig:bt-bs-seq}. Once again
+station is for reference in \autoref{fig:android-comm}. Once again
 this underlying protocol will be made to be abstracted away from the underlying
 hardware. For example, if the HC-05 were to fail to meet WHCS' strict
 requirements, then we would have to switch it for the next best unit - the
@@ -494,9 +481,6 @@ RN-41. If we write the underlying driver to be ``top level'' layer that the
 base station will interact with, then large amount of code and possibly
 architecture will have to be swapped out to meet the needs of another hardware
 device.
-
-\ucfgfx[width=\linewidth]{fig:bt-bs-seq}{bluetooth-bs-seq}{an example sequence diagram that could
-occur between a connected bluetooth phone and the base station}
 
 In regards to the application level protocol for WHCS, there will need to be a
 well defined, easy way, for the BlueTooth library to gather information from
@@ -516,7 +500,7 @@ interaction would have to asynchronously tracked until the request was
 fulfilled. This would complicate the system, but would allow for more advanced
 queries and commands.
 
-\paragraph{LCD}
+\subsubsection{LCD}
 In what could be considered the ``face of WHCS'', the LCD module, which will be
 situated directly over the Atmega32-A, will have the tough job of accurately
 and quickly conveying any desired information about the state of WHCS' control
@@ -548,7 +532,7 @@ to be power efficient. Despite not needing to worry about power, this function
 would be simple to implement as only one microcontroller pin is required to
 control the screen brightness.
 
-\paragraph{Touchpanel}
+\subsubsection{Touchpanel}
 In order to provide a way for an end user to be able to control WHCS from the
 LCD unit, there is a requirement to poll for touch events.
 This subsystem can be considered a part of the LCD, but the driver is independent
@@ -566,23 +550,9 @@ The extent of the touchpanel interaction will occur from a \texttt{getTouch()}
 method. This method will return the latest touch event, if any. The base
 station will have full control over where this touch event is dispatched to.
 Depending on the LCD scene (i.e main menu, boot screen), this event will be
-handled in different ways. Further details are discussed in
-\autoref{sec:ui-lib} for the UI library.
+handled in different ways.
 
-\paragraph{Timers}
-Accurate timing is one of the tasks microcontrollers excel at. The WHCS base
-station will be using timers to schedule periodic events, wake up from sleep
-modes, to provide automated send and resend delays, and much more. A simple
-Timer class will serve as the mechanism and state for a single Timer object.
-These objects will b e kept track of in a global list and ticked every loop.
-When a timer reaches the number of ticks or has simply expired, then it will be
-fired. This firing may cause an action to occur, which is programmable to the
-specific need. This action may be something like scheduling a network health
-check or to increase the step of an LCD graphics animation. A UML representation of the WHCS timer class is shown in \autoref{fig:timer-uml}.
-
-\ucfgfx[width=\linewidth]{fig:timer-uml}{timer-uml}{A UML representation of the Timer class}
-
-\subsubsection{Schematic Breakdown}
+\subsection{Schematic Breakdown}
 To tie the whole design of the base station together, the schematic, created in KiCad is broken down below. The full schematic is available for viewing in \autoref{apx:base-station-sch}.
 
 In \autoref{fig:bs-sch-crystal} we see a focused view of the Atmega32-A
@@ -667,69 +637,15 @@ would quickly be drained.
 \ucfgfx[width=\linewidth]{fig:ctrl-mod-soft-flow}{control-module-flow}{the high level
 software flow for a generic control module}
 
-Beyond scheduling packets and receving responses, the sensor or actuator that
-the control module is responsible needs to be serviced. The rate at which the
-sensor is polled is depending on the required data rate. For instance, if this
-control module is controlling the door, then it needs to be actively listening
-for a packet to open or close it. This is quite different from the requirements
-of a control module that is gathering temperature data. Like the base station,
-the control module will also have a global list of timers that will govern the
-timing of events and actions to be taken. The timer list can be associated to
-any thing that is required to run in the future or periodically.
-
-Events spawned from receiving packets from the base station will change the
-internal state of the control modules. This state is going to be transitioned
-between using a specific set of functions that act as an API to the base
-station. This API will extend across the network layer through a network
-protocol that will enable the control and querying of the control module's state
-from remote locations. It is important that this is done right in and in a
-sustainable manner in order to have clean API for usage across the entire
-network. With out a clean and well thought API, each control module will have
-duplicate functionality to handle common tasks. This has already been in
-further detail in the base station and network library sections.
-
-The mobile nature of WHCS' control modules means that they need to be aware of
-their power state. We want our modules to consume as little power as possible
-in order to sustain an isolated power outage. Also, some modules may opt to be
-battery only if their power requirements are low enough. For instance, a
-temperature module may be a low enough power consumption that it could last on
-a battery long enough to be feasible. This requires further field testing and
-research in order to prove right or wrong. Regardless of the end goals for WHCS
-control modules, the state of the battery for each control module should be
-known to the base station for analytics and tracking.
-
 \subsection{Electronic Strike}
 
 \label{sec:electronic-strike}
 
-\subsubsection{Normally Open or Normally Closed}
 The first thing we considered was whether we wanted a normally open lock or a
 normally closed lock. Normally opened means that the door requires power to be
 unlocked and is otherwise locked without power, while normally closed means
 that the door needs power in order to be locked and is only unlocked when the
-power is shut off. It was pretty easy for our group to decide that normally
-open was the better design choice because it would allow the door to be locked
-most of the time without wasting power. The only issue we saw initially was
-that it might be a potential safety hazard to have doors locked while there is
-a power failure. In the case of an emergency this could be a huge problem. We
-did however find an easy way to have a mechanical alternative (this will be
-discussed in the next \autoref{sec:strike-v-deadbolt}) so that the safety hazard was
-no longer present.
-
-\subsubsection{Strike vs Deadbolt}
-\label{sec:strike-v-deadbolt}
-There are two main types of electric locks to choose from, electric strikes and
-deadbolts. While some may argue that deadbolts are more secure, electric
-strikes have the advantage that it they can be used with a regular door knob.
-This is an advantage because it allows us to include a door knob with a
-mechanical lock. That way if there is ever a power failure the mechanical lock
-can still be used. This gets rid of the safety hazard that could arise if for
-example a fire where to occur. It also allows for a backup system in case you
-were to lose your phone or if there were some sort of failure in the
-electronics that give the command to unlock the door. While perhaps there is a
-higher level of security that could result from using a deadbolt, the advantage
-that comes from using an electric strike outweighs the benefit or an electric
-deadbolt.
+power is shut off.
 
 \subsection{Sensor Data Collection}
 The temperature sensor that we have decided to use for WHCS is the TMP36. The
@@ -739,16 +655,7 @@ connection. The schematic shown in \autoref{fig:temp-sensor-connect} shows how t
 temperature sensor would be connected to the ATmega328 on the control modules.
 The VOUT pin of the TMP36 outputs a voltage signal that varies based on the
 temperature surrounding the component. The voltage range is between 2.7 to 5.5
-volts which will be suppliable through or logic level voltage lines. This model
-of temperature sensor is capable of sensing temperatures within the range of
-{}-40 to 125 degrees Celsius. This covers all the temperatures that one would
-encounter in a home and more. Connecting to the analog sensor will require the
-use of one of the ATmega328's ADC (Analog to Digital Conversion) pins for
-converting the analog signal to a digital signal. There are plenty of ADC pins
-available on the microcontroller and even when one pin on the ADC port is
-connected for conversion the other pins can still be used as GPIO pins. The
-schematic shows the output of the temperature sensor going to pin ACD0 but any
-ADC pin will be able to accomplish converting the signal to digital.
+volts which will be suppliable through or logic level voltage lines.
 
 \ucfgfx[width=\linewidth]{fig:temp-sensor-connect}
 {a683SensorCollectionexpected2pages-img001.png}{Temperature Sensor Connection Schematic}
@@ -765,19 +672,7 @@ Microelectronics with the part number S108T02F that met all the requirements
 that we set. We confirmed that the chip is in stock and suppliable by digikey.
 The chip is available at an affordable price of \$5.10. \autoref{fig:wiring-sch-ssr}
 Shows a schematic using this solid state relay. The schematic for the control
-module would mimic the one shown in this figure. The activation input would be
-directly connected to the microcontroller{}'s GPIO pin in order to toggle on
-and off the state of the relay. This particular relay has an activation voltage
-of 1.2V DC which means that when the relay is on this is the voltage across the
-diode shown in the schematic. Thus the forward current for this schematic can
-be calculated through the equation (5V{}-1.2V)/R1. The SSR in the figure
-requires at least 15mA for activation. The microcontroller{}'s pins are
-adequate for supplying this low current. When the microcontroller{}'s
-activation pin, pin PB1 in the figure, is set to high, the 120V AC is free to
-flow through the triac of the SSR and power the component in place of the load
-resistor. In WHCS the load resistor RL in the figure will be replaced with an
-outlet or a light. Whenever the microcontroller pin goes high, the light or
-outlet will receive the power it normally would from the household main.
+module would mimic the one shown in this figure.
 
 \ucfgfx[width=\linewidth]{fig:wiring-sch-ssr}{a684LightandOutletControl-img001.png}{
 Wiring Schematic for Solid State Relay}
@@ -827,47 +722,12 @@ user performs speech activation.
 \ucfgfx[width=\linewidth]{fig:android-speech}{a55-img003.png}{Android app speech activation
 chart}
 
-The goal of the speech activation feature is to be easy to use. In order to
-promote the usage of this feature we will add the ability for users to rename
-the endpoints that the speech commands will target. For example the user could
-change {}``light 1'' into {}``living room light.'' This way the user could say
-{}``living room light on{}'' to the application in order to turn on the living
-room light. To do this data structures will need to be stored in the
-application which hold the preferred name of each type of endpoint. Endpoints
-can be distinguished by the type they are, their individual identifier number
-and their preferred name. The preferred name should be stored when the
-application is closed so a permanent source of storage is needed to do this.
-The file system can be used or possibly a SQLite database.
-
-In the code for our application we will be using the Android speech recognition
-API (Application Program Interface).  Android has a speech recognition service
-that can be started by requesting it within an application. We will request
-this service to be run by using an Android construct called an intent,
-specifically the recognizer intent. Once the request the service to be run it
-gives us the text that it produced from listening to the user{}'s speech. The
-code that performs this process ends up bloating up the application so we
-sought to develop a wrapper class in order to perform the request for the
-speech service and simply hand back the text. However because of the Android
-design philosophy, creating a wrapper class to start the speech recognition
-service was not easy enough to make it a worthwhile endeavour. Thus we
-concluded the best approach is to keep the calls to the Android speech
-recognition API within the class we use for our main activity.
-
 \subsection{BlueTooth Software Design} BlueTooth will be the technology that
 allows WHCS users to interact with the base station from the mobile phone. This
 means that proper functioning BlueTooth software must be written to ensure that
 users can interact with WHCS. From the user{}'s standpoint the only knowledge
 of BlueTooth required will be the ability to perform an initial connection to
-the base station. Once a user has connected to the base station once through
-the WHCS app we will be able to cache the base station device and allow for
-automatic reconnection every time the application is launched. This is an
-important abstraction for the user because the user should not have to spend
-time handling BlueTooth connections every time they open the application.
-\autoref{fig:android-bluetooth-start} shows what the BlueTooth software will be
-doing whenever the user opens the Android application.
-
-\ucfgfx[width=\linewidth]{fig:android-bluetooth-start}{a55-img004.png}{Android BlueTooth Startup
-Flowchart}
+the base station.
 
 In \autoref{fig:android-bluetooth-start} we see that the first check that is
 made is to ensure that BlueTooth is enabled. The Android operating system
@@ -888,22 +748,6 @@ show up in the paired devices list, the user will be able to search for active
 BlueTooth devices and select the base station. At the end of this start up
 cycle the WHCS application will have an active BlueTooth connection with the
 base station that can be used for full duplex communication.
-
-Our application will be leveraging the API and design guideline for using
-BlueTooth from Android phones. The underlying driver for BlueTooth
-communication utilizes sockets similar to network sockets in other languages.
-Android offers a class named BluetoothDevice which contains all the address
-information necessary for opening a socket. When our application scans for
-devices or asks the user to pick an option from the list of paired devices this
-will be to get the BluetoothDevice to open a socket from. Once we have obtained
-that BluetoothDevice we can create a BluetoothSocket through one of its
-methods. Once a BluetoothSocket has been opened through calling connect, an
-input and output stream become available that allow us to send and receive raw
-byte data. This is a primitive form of communication but it is also exactly
-what we want. All data that we send or receive from the base station over
-BlueTooth will be in the form of a byte array. This form of primitive data
-transmission allows us to implement certain communication protocols between the
-Android base station.
 
 Once a BluetoothSocket has been opened on the Android device the application
 can begin communicating with the base station. We will use a communication
