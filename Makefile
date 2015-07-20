@@ -1,5 +1,4 @@
-all:
-	pdflatex -draftmode whcs.tex && pdflatex whcs.tex
+all: final
 
 # NOTE: when compiling, you MUST NOT mix different draft, final, normal
 # compiles. The AUX file will be messed up
