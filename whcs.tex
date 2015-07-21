@@ -220,7 +220,7 @@ The presence of wireless technologies and proliferation of mobile controlled dev
 \end{abstract}
 
 \begin{IEEEkeywords}
-bluetooth, Home automation, mobile, scalable platform, sensors, power control, wireless.
+bluetooth, Home automation, mobile, power control, scalable platform, sensors, wireless.
 \end{IEEEkeywords}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
@@ -411,10 +411,9 @@ required. For both the Bluetooth and radio, new packets are checked
 and serviced as needed. From these packets, internal state would updated and any
 response packets would be generated and sent. Internally, WHCS has an
 internal event queue with different event types. These events are processed
-and any responses are generated, if any. These responses could include a
-confirmation packet over the NRF radio, or a status update through Bluetooth.
+and any responses are generated, if any. These responses include a
+confirmation packet over the NRF radio and a status update through Bluetooth.
 The base station may also initialize actions despite not receiving events.
-These could be triggered from timers firing.
 
 All of the above tasks are executing in the same way as single core CPU
 would: in pseudo-parallel. The faster the whole system runs, the better the
@@ -431,9 +430,7 @@ a hierarchy where all of the common attributes and actions shared by control
 modules have packets that can be sent to any module. Whereas the more specific
 packets (get temperature, engage door, etc.) would be wrapped up in the generic
 ones (essentially a derived object from the generic control module.) This can
-be visualized in \autoref{fig:ctrl-mod-hierarchy}. The
-details of a network structure that would enable this clean interface is
-further described in \autoref{sec:network-library}.
+be visualized in \autoref{fig:ctrl-mod-hierarchy}.
 
 \ucfgfx[width=\linewidth]{fig:ctrl-mod-hierarchy}{control-module-hierarchy}{showing the control
 module hierarchy for WHCS}
@@ -508,9 +505,8 @@ regulator and MCU.
 \section{Control Modules}
 What can be thought of as the ``arms of WHCS'', the control modules serve as
 the main devices that seed the network with data. This data is specific to the
-control module that is emitting it. The base station is more more complex than
-an individual control module because it needs to be. The control modules should
-be as lightweight as possible to save cost and keep power usage down. If the
+control module that is emitting it. The control modules are
+as lightweight as possible to save cost and keep power usage down. If the
 control modules were too complex, then the entire cost of WHCS would increase
 proportionally to the number of control modules.
 
@@ -522,7 +518,7 @@ needs to work with is the NRF radio. This can be seen in
 \autoref{fig:ctrl-mod-soft-flow}. Due to the capabilities
 for the NRF radio to provide an interrupt signal on the reception of a packet,
 the control module actually has the ability to sleep when not doing anything.
-Control modules should be as mobile as possible, which limits their overall
+Control modules are be as mobile as possible, which limits their overall
 functionality and processing power. Without these limits, any battery attached
 would quickly be drained.
 
@@ -542,7 +538,7 @@ of safety hazards that could occur if the WHCS system lost power. The operating
 mode for the electronic strike is normally open. This means the strike requires
 power to be unlocked and is otherwise locked. As a result, power is saved
 within the system which is beneficial because the electronic strike consumes
-roughly 450 mA at 12V during operation.
+roughly 450mA at 12V during operation.
 
 \subsection{Sensor Data Collection}
 The temperature sensor that we used for WHCS is the TMP36. The temperature
@@ -575,7 +571,7 @@ Wiring Schematic for Solid State Relay}
 The control modules for WHCS have to be able to support communication via a
 radio transceiver as well as interaction with their target endpoints.
 \autoref{fig:ctrl-mod-sch} shows the schematic for the control modules that is be
-implemented in WHCS. The full schematic is available for viewing in \autoref{apx:control-module-sch}. The main component of the schematic is the ATmega328.
+implemented in WHCS.
 Everything in the schematic is connected to the microcontroller in some way. In
 the schematic three different VCC lines are shown. This is because the control
 modules will have to access to a 3.3V line, a 5V line, and a 12V line. The
@@ -684,7 +680,7 @@ all of our decisions based on their performance and ease of integration. We
 merely needed to know how much current our system drew to properly design of
 our switching regulators as well as choose our transformer.
 
-The \autoref{tbl:powerconsump} and \autoref{tbl:powerconsump2} were used in making our design decisions.
+\autoref{tbl:powerconsump} and \autoref{tbl:powerconsump2} were used in making our design decisions.
 
 \ucfgfx[width=0.8\linewidth]{tbl:powerconsump}{Powerconsump-img001.png}{shows the current requirements of each device in our system.}
 
@@ -696,16 +692,16 @@ rating as well as the winding ratio. Given that the highest voltage output
 needed for our design was 12VDC we decided on a 120:14 winding ratio. This gave
 us about 20VDC to be stepped down by our switching regulators. To choose the
 apparent power rating we had to consider the current draw. From
-\autoref{tbl:powerconsump2} we find that the max current the system would could ever
-draw would be below 725 mA. The apparent power rating can be calculated by
-I*Vrms. Given the information of our system we required an apparent power
-rating of at least .725*14 = 11. The transformer we chose had an apparent power
-rating of 20. 
+\autoref{tbl:powerconsump2} we find that the max current the system would ever
+draw would be below 725mA. The apparent power rating can be calculated by
+$I*V_{rms}$. Given the information of our system we required an apparent power
+rating of at least $0.725*14 = 11\text{VA}$. The transformer we chose had an apparent power
+rating of 20VA. 
 
 We chose our capacitor using the equation $V_r = \frac{I}{2*f*C}$ for an approximation
 of the expected ripple (Millman-Halkias, pg. 112-114). Using a capacitor of
-$4700\mu~F$ gives us a ripple of .887V (for most applications our current draw will
-be below 500 mA).
+$4700\mu F$ gives us a ripple of .887V (for most applications our current draw will
+be below 500mA).
 
 % Conclusion
 \section{Conclusion}
@@ -740,7 +736,6 @@ number and type of control modules supported by WHCS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Engineering Team
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\vspace{4cm}
 \section{Engineering Team}
 \begin{wrapfigure}{l}{0.4\linewidth}
 \vspace{-12pt}
@@ -749,6 +744,7 @@ number and type of control modules supported by WHCS.
 \vspace{-22pt}
 \end{wrapfigure}
 
+\noindent
 \textbf{Grant Hernandez} is a senior at the University of Central Florida. He will be
 graduating with a Bachelor of Science in Computer Engineering this summer. In
 his spare time, Grant writes lots of code, reverse engineers binaries, plays in cyber
@@ -764,6 +760,7 @@ to begin his Ph.D in Computer Engineering with a security research lab.
 \vspace{-22pt}
 \end{wrapfigure}
 
+\noindent
 \textbf{Jimmy Campbell} is a senior at the University of Central Florida. He will be
 receiving a Bachelor of Science in Computer Engineering in August 2015. His
 interests include embedded programming, mobile development, and web back-end
@@ -778,6 +775,7 @@ Software Development Engineer after graduating.
 \vspace{-22pt}
 \end{wrapfigure}
 
+\noindent
 \textbf{Joseph Love} is currently a senior at the University of Central Florida and will
 receive his Bachelor of Science in Electrical Engineering in August of 2015. He
 is currently working with Direct Beam Incorporated and plans to pursue his
